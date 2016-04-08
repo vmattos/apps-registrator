@@ -7,7 +7,10 @@ import (
 	"net/http"
 
 	"github.com/valyala/fasthttp"
+	"github.com/vtex/go-sdk/vtexid/apptoken"
 )
+
+var appToken string
 
 type SetupHook struct {
 	Account   string   `json:"account"`
@@ -19,6 +22,14 @@ type SetupHook struct {
 
 type PreSetupResponse struct {
 	Continue bool `json:"continue"`
+}
+
+func init() {
+	var err error
+	appToken, err = apptoken.GetValidAppToken()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
