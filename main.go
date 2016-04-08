@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"log"
 
 	"github.com/valyala/fasthttp"
 )
@@ -15,7 +15,7 @@ func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
 	path := string(ctx.Path())
 	method := string(ctx.Method())
 
-	fmt.Println(method + " " + path)
+	log.Printf("[%s]: %s %s", ctx.RemoteAddr(), method, path)
 
 	ctx.SetStatusCode(http.StatusOK)
 }
