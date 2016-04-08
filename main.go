@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/valyala/fasthttp"
 )
@@ -31,7 +32,10 @@ func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
 	hook := SetupHook{}
 	err := json.Unmarshal(ctx.PostBody(), &hook)
 	if err != nil {
-		panic(err)
+		log.Printf("[%s]: %s %s: %s", ctx.RemoteAddr(), method, path, err)
+		ctx.SetStatusCode(http.StatusInternalServerError)
+		fmt.Fprintf(ctx, "%s", err)
+		return
 	}
 
 	log.Printf("[%s]: %s %s", ctx.RemoteAddr(), method, path)
