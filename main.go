@@ -7,22 +7,11 @@ import (
 	"net/http"
 
 	"github.com/valyala/fasthttp"
+	"github.com/vtex/apps-registrator/models"
 	"github.com/vtex/go-sdk/vtexid/apptoken"
 )
 
-var appToken string
 
-type SetupHook struct {
-	Account   string   `json:"account"`
-	Workspace string   `json:"workspace"`
-	Hash      string   `json:"hash"`
-	Removals  []string `json:"removals"`
-	Additions []string `json:"additions"`
-}
-
-type PreSetupResponse struct {
-	Continue bool `json:"continue"`
-}
 
 func init() {
 	var err error
@@ -40,7 +29,7 @@ func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
 	path := string(ctx.Path())
 	method := string(ctx.Method())
 
-	hook := SetupHook{}
+	hook := models.SetupHook{}
 	err := json.Unmarshal(ctx.PostBody(), &hook)
 	if err != nil {
 		log.Printf("[%s]: %s %s: %s", ctx.RemoteAddr(), method, path, err)
@@ -51,7 +40,7 @@ func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
 
 	log.Printf("[%s]: %s %s", ctx.RemoteAddr(), method, path)
 
-	response := PreSetupResponse{
+	response := models.PreSetupResponse{
 		Continue: true,
 	}
 	responseBody, _ := json.Marshal(response)
