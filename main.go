@@ -12,6 +12,7 @@ import (
 )
 
 
+var appToken string
 
 func init() {
 	var err error
