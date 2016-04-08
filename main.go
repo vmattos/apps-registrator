@@ -16,6 +16,10 @@ type SetupHook struct {
 	Additions []string `json:"additions"`
 }
 
+type PreSetupResponse struct {
+	Continue bool `json:"continue"`
+}
+
 func main() {
 	fasthttp.ListenAndServe(":8080", fastHTTPHandler)
 }
@@ -32,5 +36,10 @@ func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
 
 	log.Printf("[%s]: %s %s", ctx.RemoteAddr(), method, path)
 
-	ctx.SetStatusCode(http.StatusOK)
+	response := PreSetupResponse{
+		Continue: true,
+	}
+	responseBody, _ := json.Marshal(response)
+
+	fmt.Fprintf(ctx, string(responseBody))
 }
