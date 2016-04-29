@@ -8,15 +8,20 @@ import (
 
 	"github.com/valyala/fasthttp"
 	"github.com/vtex/apps-registrator/models"
+	"github.com/vtex/go-sdk/vtexid"
 	"github.com/vtex/go-sdk/vtexid/apptoken"
 )
 
-
 var appToken string
+var authToken string
 
 func init() {
 	var err error
 	appToken, err = apptoken.GetValidAppToken()
+	if err != nil {
+		panic(err)
+	}
+	authToken, err = vtexid.GetAuthToken("vtexappkey-appvtex", appToken)
 	if err != nil {
 		panic(err)
 	}
