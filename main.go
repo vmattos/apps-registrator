@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/valyala/fasthttp"
+	"github.com/vtex/apps-registrator/etcd"
 	"github.com/vtex/apps-registrator/models"
 	"github.com/vtex/go-gallery-sdk/app"
 	"github.com/vtex/go-sdk/vtexid"
@@ -19,6 +20,7 @@ var (
 	appToken   string
 	authToken  string
 	pathRegexp *regexp.Regexp
+	etcdClient etcd.Etcd
 )
 
 func init() {
@@ -33,6 +35,8 @@ func init() {
 	}
 
 	pathRegexp = regexp.MustCompile("routes/(.*)\\.json")
+
+	etcdClient = etcd.New()
 }
 
 func main() {
@@ -109,11 +113,12 @@ func ConfigureRoutes(account, workspace, addition string) {
 					body := <-bodyChan
 					route := models.Route{}
 					err := json.Unmarshal(body, &route)
+					routeName := strings.Split(file.Path, "/")[1]
+					route.Name = routeName
 					if err != nil {
 						panic(err)
 					}
-					fmt.Println(route.Path)
-					fmt.Println(route.Backend)
+					etcdClient.SetRoute(&route)
 				}
 			}
 		}
