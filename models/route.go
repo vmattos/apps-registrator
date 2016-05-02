@@ -8,3 +8,7 @@ type Route struct {
 type Backend struct {
 	Type string
 }
+
+type Server struct {
+	URL string
+}

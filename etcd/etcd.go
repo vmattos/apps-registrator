@@ -70,3 +70,17 @@ func (self *Etcd) setBackend(bckID string) {
 	stringValue := string(value[:])
 	self.Set(key, stringValue)
 }
+
+func (self *Etcd) setServer(bckID string) {
+	server := models.Server{
+		URL: bckID,
+	}
+	value, err := json.Marshal(server)
+	if err != nil {
+		panic(err)
+	}
+	id := strings.Split(bckID, "http://")[1]
+	key := self.Prefix + "/backends/" + id + "/servers/srv"
+	stringValue := string(value[:])
+	self.Set(key, stringValue)
+}
