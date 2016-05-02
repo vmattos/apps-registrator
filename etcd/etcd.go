@@ -11,6 +11,7 @@ import (
 
 type Etcd struct {
 	client client.KeysAPI
+	Prefix string
 }
 
 func New() Etcd {
@@ -27,7 +28,14 @@ func New() Etcd {
 		panic(err)
 	}
 
-	return Etcd{client: client.NewKeysAPI(c)}
+	return Etcd{
+		client: client.NewKeysAPI(c),
+		Prefix: "/vulcand",
+	}
+}
+
+func (self *Etcd) SetPrefix(prefix string) {
+	self.Prefix = prefix
 }
 
 func (self *Etcd) Get(key string) (string, error) {
