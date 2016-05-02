@@ -57,6 +57,12 @@ func (self *Etcd) Set(key, value string) (string, error) {
 	return resp.Node.Value, nil
 }
 
+func (self *Etcd) SetRoute(route *models.Route) {
+	self.setBackend(route.Backend)
+	self.setServer(route.Backend)
+	self.setFrontend(route)
+}
+
 func (self *Etcd) setBackend(bckID string) {
 	backend := models.Backend{
 		Type: "http",
