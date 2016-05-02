@@ -84,3 +84,20 @@ func (self *Etcd) setServer(bckID string) {
 	stringValue := string(value[:])
 	self.Set(key, stringValue)
 }
+
+func (self *Etcd) setFrontend(route *models.Route) {
+	path := "PathRegexp(`" + route.Path + "`)"
+	bckID := strings.Split(route.Backend, "http://")[1]
+	frontend := models.Frontend{
+		Type:      "http",
+		BackendId: bckID,
+		Route:     path,
+	}
+	value, err := json.Marshal(frontend)
+	if err != nil {
+		panic(err)
+	}
+	key := self.Prefix + "/frontends/" + route.Name + "/frontend"
+	stringValue := string(value[:])
+	self.Set(key, stringValue)
+}

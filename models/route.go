@@ -1,6 +1,7 @@
 package models
 
 type Route struct {
+	Name    string
 	Path    string
 	Backend string
 }
@@ -11,4 +12,10 @@ type Backend struct {
 
 type Server struct {
 	URL string
+}
+
+type Frontend struct {
+	Type      string
+	BackendId string
+	Route     string
 }
