@@ -1,12 +1,15 @@
 package etcd
 
 import (
+	"encoding/json"
 	"os"
+	"strings"
 	"time"
 
 	"golang.org/x/net/context"
 
 	"github.com/coreos/etcd/client"
+	"github.com/vtex/apps-registrator/models"
 )
 
 type Etcd struct {
@@ -52,4 +55,18 @@ func (self *Etcd) Set(key, value string) (string, error) {
 		return "", err
 	}
 	return resp.Node.Value, nil
+}
+
+func (self *Etcd) setBackend(bckID string) {
+	backend := models.Backend{
+		Type: "http",
+	}
+	value, err := json.Marshal(backend)
+	if err != nil {
+		panic(err)
+	}
+	id := strings.Split(bckID, "http://")[1]
+	key := self.Prefix + "/backends/" + id + "/backend"
+	stringValue := string(value[:])
+	self.Set(key, stringValue)
 }
