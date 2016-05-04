@@ -1,9 +1,10 @@
 package models
 
 type Route struct {
-	Name    string
-	Path    string
-	Backend string
+	Name       string
+	Path       string
+	ServiceApp string
+	Backend    string
 }
 
 type Backend struct {

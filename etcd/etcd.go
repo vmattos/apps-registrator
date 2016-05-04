@@ -2,6 +2,7 @@ package etcd
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -61,6 +62,7 @@ func (self *Etcd) SetRoute(route *models.Route) {
 	self.setBackend(route.Backend)
 	self.setServer(route.Backend)
 	self.setFrontend(route)
+	fmt.Println("setting route on etcd")
 }
 
 func (self *Etcd) setBackend(bckID string) {

@@ -87,25 +87,28 @@ func ConfigureRoutes(account, workspace, addition string) {
 	appClient.SetWorkspace(workspace)
 	appClient.SetAppVersion(version)
 
-	servicesChan, errChan := appClient.ListWorkspaceAppFiles()
+	// Fetches all buckets from a given app on a given workspace
+	bucketsChan, errChan := appClient.ListWorkspaceAppFiles()
 	err := <-errChan
 	if err != nil {
 		panic(err)
 	}
-	services := <-servicesChan
+	buckets := <-bucketsChan
 
-	for _, service := range services {
-		if service == "router" {
-			filesChan, errChan := appClient.ListServiceFiles(service)
+	for _, bucket := range buckets {
+		// Gets files from bucket if bucket is router
+		if bucket == "router" {
+			filesChan, errChan := appClient.ListServiceFiles(bucket)
 			err = <-errChan
 			if err != nil {
 				panic(err)
 			}
 			files := <-filesChan
 			for _, file := range files.Data {
+				// Gets file if it is under routes/ folder
 				isCompliant := pathRegexp.MatchString(file.Path)
 				if isCompliant {
-					bodyChan, errChan := appClient.GetServiceFile(service, file.Path)
+					bodyChan, errChan := appClient.GetServiceFile(bucket, file.Path)
 					err = <-errChan
 					if err != nil {
 						panic(err)
@@ -118,10 +121,35 @@ func ConfigureRoutes(account, workspace, addition string) {
 					if err != nil {
 						panic(err)
 					}
+					service := getBackend(account, workspace, &route)
+					route.Backend = service.EndpointUrl
 					etcdClient.SetRoute(&route)
 				}
 			}
 		}
 	}
 
+}
+
+func getBackend(account, workspace string, route *models.Route) models.Service {
+	split := strings.Split(route.ServiceApp, ".")
+	owner := split[0]
+	name := split[1]
+	bucket := "apps"
+
+	appClient := app.NewAppClient("http://apps.vtex.com", authToken)
+	appClient.SetOwner(owner)
+	appClient.SetName(name)
+	appClient.SetAccount(account)
+	appClient.SetWorkspace(workspace)
+
+	bodyChan, errChan := appClient.GetServiceFile(bucket, "service.json")
+	err := <-errChan
+	if err != nil {
+		panic(err)
+	}
+	body := <-bodyChan
+	service := models.Service{}
+	json.Unmarshal(body, &service)
+	return service
 }
